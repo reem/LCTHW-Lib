@@ -2,6 +2,19 @@
 * This is the library from [Learn C the Hard Way](http://c.learncodethehardway.org/book/)
 * I have implemented many of the Extra-Credit and How to Improve it sections.
 * Not yet complete as I am still working my way through the book.
+* Currently implements:
+  * Doubly-Linked Lists
+  * Dynamically-Sized Arrays
+  * Radix Sort through a RadixMap
+* To imeplement:
+  * Stacks
+  * Queues
+  * Hashmaps
+  * Binary Search Trees
+  * Ternary Search Trees
+  * A Stats Engine
+  * URL Router
+  * TCP/IP Client
 
 ## Changes from the book ##
 * Has been made more robust with additional check() statements and more unit

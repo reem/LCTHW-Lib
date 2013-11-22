@@ -20,7 +20,7 @@
 * Compile using `make`
   * The compile process is not very robust.
   * Some flags don't work with `gcc-4.8`, so I've changed `CC` to `gcc-4.2`
-    installed using `brew install applegcc42`.
+    installed using `brew install apple-gcc42`.
 * The libs can be found as `liblcthw.a` and `liblcthw.so` in `./build`.
 
 ## License ##

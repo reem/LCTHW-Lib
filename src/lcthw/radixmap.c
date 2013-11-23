@@ -20,6 +20,7 @@ RadixMap *RadixMap_create(size_t max) {
 
     map->max = max;
     map->end = 0;
+    map->high = 0;
 
     return map;
 
@@ -67,14 +68,33 @@ static inline void radix_sort(short offset, uint64_t max,
     }
 }
 
+static inline uint8_t getByte(uint32_t x, int n) {
+    return (x >> (n << 3)) & 0xff;
+}
+
 void RadixMap_sort(RadixMap *map, int start, int end) {
+    if(map->high == 0) return;
     uint64_t *source = &map->contents[start].raw;
     uint64_t *temp = &map->temp[start].raw;
 
-    radix_sort(0, end, source, temp);
-    radix_sort(1, end, temp, source);
-    radix_sort(2, end, source, temp);
-    radix_sort(3, end, temp, source);
+    uint8_t highest = 3;
+    while(getByte(map->high, highest) == 0x00) {
+        highest--;
+    }
+
+    uint8_t i = 0;
+    for(i = 0; i <= highest; i++) {
+        if(!(i & 1)) {
+            radix_sort(i, end, source, temp);
+        }
+        else {
+            radix_sort(i, end, temp, source);
+        }
+    }
+
+    if(!(highest & 1)) {
+        memcpy(source, temp, sizeof(RMElement) * (map->end - 1));
+    }
 }
 
 int RadixMap_bisect(RadixMap *map, uint32_t to_find) {
@@ -151,6 +171,8 @@ RMElement *RadixMap_find(RadixMap *map, uint32_t to_find) {
 
 int RadixMap_add(RadixMap *map, uint32_t key, uint32_t value) {
     check(key < UINT32_MAX, "Key can't be equal to UINT32_MAX.");
+    if(key > map->high)
+        map->high = key;
 
     RMElement element = {.data = {.key = key, .value = value}};
     check(map->end + 1 < map->max, "RadixMap is full.");

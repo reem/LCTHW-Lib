@@ -8,6 +8,10 @@ static int make_random(RadixMap *map) {
 
     for(i = 0; i < map->max - 1; i++) {
         uint32_t key = (uint32_t)(rand() | (rand() << 16));
+        if(key > map->high) {
+            debug("Changed map->high from %u to %u", map->high, key);
+            map->high = key;
+        }
         RMElement element = {.data = {.key = key, .value = i}};
         check(map->end + 1 < map->max,
                 "RadixMap was too small. Failed to add key %u", key);
@@ -106,9 +110,10 @@ char *test_speed() {
 
         map->max = source_map->max;
         map->end = source_map->end;
+        map->high = source_map->high;
         map->counter = source_map->counter;
-        memcpy(map->contents, source_map->contents, sizeof(RMElement));
-        memcpy(map->temp, source_map->temp, sizeof(RMElement));
+        memcpy(map->contents, source_map->contents, sizeof(RMElement) * (map->end-1));
+        memcpy(map->temp, source_map->temp, sizeof(RMElement) * (map->end -1));
 
         clock_t elapsed = -clock();
         RadixMap_sort(map, 0, map->end);

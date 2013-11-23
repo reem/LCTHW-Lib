@@ -21,6 +21,7 @@ RadixMap *RadixMap_create(size_t max) {
     map->max = max;
     map->end = 0;
     map->high = 0;
+    map->low = UINT32_MAX;
 
     return map;
 
@@ -73,12 +74,13 @@ static inline uint8_t getByte(uint32_t x, int n) {
 }
 
 void RadixMap_sort(RadixMap *map, int start, int end) {
-    if(map->high == 0) return;
+    if((map->high == 0) || (map->low == 0)) return;
+    if(map->high == map->low) return;
     uint64_t *source = &map->contents[start].raw;
     uint64_t *temp = &map->temp[start].raw;
 
     uint8_t highest = 3;
-    while(getByte(map->high, highest) == 0x00) {
+    while(getByte(map->high, highest) == getByte(map->low, highest)) {
         highest--;
     }
 
@@ -173,6 +175,8 @@ int RadixMap_add_no_sort(RadixMap *map, uint32_t key, uint32_t value) {
     check(key < UINT32_MAX, "Key can't be equal to UINT32_MAX.");
     if(key > map->high)
         map->high = key;
+    if(key < map->low)
+        map->low = key;
 
     RMElement element = {.data = {.key = key, .value = value}};
     check(map->end + 1 < map->max, "RadixMap is full.");
@@ -203,6 +207,7 @@ int RadixMap_delete(RadixMap *map, RMElement *el) {
     check(map->end > 0, "There is nothing to delete.");
     check(el != NULL, "Can't delete NULL element.");
 
+    uint32_t old_key = el->data.key;
     el->data.key = UINT32_MAX;
 
     if(map->end > 1) {
@@ -211,6 +216,28 @@ int RadixMap_delete(RadixMap *map, RMElement *el) {
     }
 
     map->end--;
+    if(map->high == old_key)
+        map->high = map->contents[map->end-1].data.key;
+    if(map->low == old_key)
+        map->low = map->contents[0].data.key;
+
+    return 0;
+
+error:
+    return -1;
+}
+
+int RadixMap_copy(RadixMap *source, RadixMap *destination) {
+    check(source->max == destination->max, "Arguments are different sizes.");
+
+    destination->max = source->max;
+    destination->end = source->end;
+    destination->high = source->high;
+    destination->low = source->low;
+    destination->counter = source->counter;
+
+    memcpy(destination->contents, source->contents, sizeof(RMElement) * (source->max));
+    memcpy(destination->temp, source->temp, sizeof(RMElement) * (source->max));
 
     return 0;
 

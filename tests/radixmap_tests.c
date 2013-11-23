@@ -87,6 +87,26 @@ static char *test_operations() {
     return NULL;
 }
 
+char *test_copy() {
+    size_t N = 100;
+    RadixMap *src = RadixMap_create(N);
+    RadixMap *copy = RadixMap_create(N);
+
+    RadixMap_copy(src, copy);
+
+    mu_assert(src->max == copy->max, "Didn't copy max.");
+    mu_assert(src->end == copy->end, "Didn't copy end.");
+    mu_assert(src->high == copy->high, "Didn't copy high.");
+    mu_assert(src->low == copy->low, "Didn't copy low.");
+    mu_assert(src->counter == copy->counter, "Didn't copy counter.");
+    mu_assert(src->counter == copy->counter, "Didn't copy counter.");
+
+    RadixMap_destroy(copy);
+    RadixMap_destroy(src);
+
+    return NULL;
+}
+
 char *test_speed() {
     size_t N = 100000;
     int i = 0;
@@ -100,12 +120,8 @@ char *test_speed() {
         RadixMap *map = RadixMap_create(N);
         mu_assert(map != NULL, "Failed to make the map.");
 
-        map->max = source_map->max;
-        map->end = source_map->end;
-        map->high = source_map->high;
-        map->counter = source_map->counter;
-        memcpy(map->contents, source_map->contents, sizeof(RMElement) * (map->end-1));
-        memcpy(map->temp, source_map->temp, sizeof(RMElement) * (map->end -1));
+        mu_assert(RadixMap_copy(source_map, map) == 0,
+                "Copying unsorted RadixMap failed.");
 
         clock_t elapsed = -clock();
         RadixMap_sort(map, 0, map->end);
@@ -128,6 +144,7 @@ char *all_tests() {
     srand(time(NULL));
 
     mu_run_test(test_operations);
+    mu_run_test(test_copy);
     mu_run_test(test_speed);
 
     return NULL;

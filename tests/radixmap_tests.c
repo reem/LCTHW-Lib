@@ -8,15 +8,7 @@ static int make_random(RadixMap *map) {
 
     for(i = 0; i < map->max - 1; i++) {
         uint32_t key = (uint32_t)(rand() | (rand() << 16));
-        if(key > map->high) {
-            debug("Changed map->high from %u to %u", map->high, key);
-            map->high = key;
-        }
-        RMElement element = {.data = {.key = key, .value = i}};
-        check(map->end + 1 < map->max,
-                "RadixMap was too small. Failed to add key %u", key);
-
-        map->contents[map->end++] = element;
+        check(RadixMap_add_no_sort(map, key, i) == 0, "Failed to add key %u.", key);
     }
 
     return 1;

@@ -169,7 +169,7 @@ RMElement *RadixMap_find(RadixMap *map, uint32_t to_find) {
     return NULL;
 }
 
-int RadixMap_add(RadixMap *map, uint32_t key, uint32_t value) {
+int RadixMap_add_no_sort(RadixMap *map, uint32_t key, uint32_t value) {
     check(key < UINT32_MAX, "Key can't be equal to UINT32_MAX.");
     if(key > map->high)
         map->high = key;
@@ -178,6 +178,16 @@ int RadixMap_add(RadixMap *map, uint32_t key, uint32_t value) {
     check(map->end + 1 < map->max, "RadixMap is full.");
 
     map->contents[map->end++] = element;
+
+
+    return 0;
+
+error:
+    return -1;
+}
+
+int RadixMap_add(RadixMap *map, uint32_t key, uint32_t value) {
+    check(RadixMap_add_no_sort(map, key, value) == 0, "Value add failed.");
 
     int start = RadixMap_bisect_left(map, key);
 

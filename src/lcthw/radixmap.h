@@ -32,6 +32,8 @@ int RadixMap_bisect_right(RadixMap *map, uint32_t key);
 
 RMElement *RadixMap_find(RadixMap *map, uint32_t key);
 
+int RadixMap_add_no_sort(RadixMap *amp, uint32_t key, uint32_t value);
+
 int RadixMap_add(RadixMap *map, uint32_t key, uint32_t value);
 
 int RadixMap_delete(RadixMap *map, RMElement *el);

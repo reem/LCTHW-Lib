@@ -109,7 +109,7 @@ error:
 
 int DArray_copy(DArray *source, DArray *dest) {
     check(source->max == dest->max,
-            "The DArray's have to be the same size.");
+            "DArray's must have same capacity.");
     check(source->element_size == dest->element_size,
             "DArray's must have same element size.");
     dest->end = source->end;

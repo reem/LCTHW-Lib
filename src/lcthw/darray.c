@@ -91,7 +91,7 @@ int DArray_push(DArray *array, void *el) {
 }
 
 void *DArray_pop(DArray *array) {
-    check(array->end - 1 >= 0, "Attempt to pop form empty array.");
+    check(array->end - 1 >= 0, "Attempt to pop from empty array.");
 
     void *el = DArray_remove(array, array->end - 1);
     array->end--;
@@ -105,4 +105,19 @@ void *DArray_pop(DArray *array) {
 
 error:
     return NULL;
+}
+
+int DArray_copy(DArray *source, DArray *dest) {
+    check(source->max == dest->max,
+            "The DArray's have to be the same size.");
+    check(source->element_size == dest->element_size,
+            "DArray's must have same element size.");
+    dest->end = source->end;
+    dest->expand_rate = source->expand_rate;
+    memcpy(dest->contents, source->contents, sizeof(void *) * source->max);
+
+    return 0;
+
+error:
+    return 1;
 }

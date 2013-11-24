@@ -100,6 +100,37 @@ char *test_push_pop() {
     return NULL;
 }
 
+char *test_copy() {
+    DArray *orig = DArray_create(sizeof(int), 11);
+    DArray *dest = DArray_create(sizeof(int), 11);
+
+    int i = 0;
+    for(i = 0; i < 10; i++) {
+        int *el_to_add = DArray_new(orig);
+        *el_to_add = i;
+        mu_assert(DArray_push(orig, el_to_add) == 0, "Pushing to DArray failed.");
+    }
+
+    int rc = DArray_copy(orig, dest);
+    mu_assert(rc == 0, "Copy failed.")
+
+    mu_assert(orig->max == dest->max, "max did not copy properly.");
+    mu_assert(orig->end == dest->end, "end did not copy properly.");
+    mu_assert(orig->element_size == dest->element_size,
+            "element_size did not copy properly.");
+    mu_assert(orig->expand_rate == dest->expand_rate,
+            "expand_rate did not copy properly.");
+
+    for(i = 0; i < 10; i++) {
+        int *val = DArray_get(dest, i);
+        mu_assert(val != NULL, "Got NULL from copy.");
+        mu_assert(*val == i,
+                "Failed to copy contents correctly.");
+    }
+
+    return NULL;
+}
+
 char *all_tests() {
     mu_suite_start();
 
@@ -111,6 +142,7 @@ char *all_tests() {
     mu_run_test(test_expand_contract);
     mu_run_test(test_push_pop);
     mu_run_test(test_destroy);
+    mu_run_test(test_copy);
 
     return NULL;
 }

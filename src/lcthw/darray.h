@@ -28,6 +28,8 @@ void *DArray_pop(DArray *array);
 
 void DArray_clear_destroy(DArray *array);
 
+int DArray_copy(DArray *source, DArray *dest);
+
 #define DArray_last(A) ((A)->contents[(A)->end - 1])
 #define DArray_first(A) ((A)->contents[0])
 #define DArray_end(A) ((A)->end)

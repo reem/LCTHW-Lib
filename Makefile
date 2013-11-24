@@ -25,13 +25,13 @@ remake:
 	make clean
 	make
 
-remakedp:
-	make clean
-	make devp
-
 remaked:
 	make clean
 	make dev
+
+remakedp:
+	make clean
+	make devp
 
 $(TARGET): CFLAGS += -fPIC
 $(TARGET): build $(OBJECTS)

@@ -39,8 +39,8 @@ int is_sorted(DArray *array, DArray_compare cmp) {
 }
 
 char *run_sort_test(int (*func)(DArray *, DArray_compare), const char *name) {
-    DArray *nums = DArray_create(sizeof(int *), 5);
-    int rc = make_random(nums, 5);
+    DArray *nums = DArray_create(sizeof(int *), 20);
+    int rc = make_random(nums, 20);
     mu_assert(rc == 0, "Randomization failed.");
 
     mu_assert(!is_sorted(nums, (DArray_compare)sintcmp), "Numbers should start not sorted.");
